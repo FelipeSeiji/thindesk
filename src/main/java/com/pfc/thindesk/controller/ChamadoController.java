@@ -2,6 +2,7 @@ package com.pfc.thindesk.controller;
 
 import com.pfc.thindesk.entity.Chamado;
 import com.pfc.thindesk.dto.AberturaChamadoRequest;
+import com.pfc.thindesk.dto.ResolucaoChamadoRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.security.Principal;
@@ -40,14 +41,20 @@ public class ChamadoController {
         return chamadoService.consultarChamado(id, principal.getName());
     }
 
+    @PutMapping("/{id}/resolver")
+    public Chamado resolverChamado(@PathVariable("id") String id,
+            @Valid @RequestBody ResolucaoChamadoRequest request, Principal principal) {
+        return chamadoService.resolverChamado(id, request.solucao(), principal.getName());
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Chamado> atualizarChamado(@PathVariable String id, @RequestBody Chamado chamadoAtualizado) {
+    public ResponseEntity<Chamado> atualizarChamado(@PathVariable("id") String id, @RequestBody Chamado chamadoAtualizado) {
         Chamado chamado = chamadoService.atualizarChamado(id, chamadoAtualizado);
         return ResponseEntity.ok(chamado);
     }
 
     @PostMapping("/atualizar/{id}")
-    public String atualizarChamado(@PathVariable String id, @ModelAttribute Chamado chamadoAtualizado, Model model) {
+    public String atualizarChamado(@PathVariable("id") String id, @ModelAttribute Chamado chamadoAtualizado, Model model) {
         chamadoService.atualizarChamado(id, chamadoAtualizado);
         return "redirect:/chamados"; // Redireciona para a página da lista de chamados
     }
