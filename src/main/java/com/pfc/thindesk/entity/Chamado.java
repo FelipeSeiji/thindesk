@@ -11,6 +11,24 @@ public class Chamado{
     private String id;
     private String titulo;
     private java.time.Instant dataAbertura;
+    private String solucao;
+    private java.time.Instant dataResolucao;
+
+    public String getSolucao() {
+        return solucao;
+    }
+
+    public void setSolucao(String solucao) {
+        this.solucao = solucao;
+    }
+
+    public java.time.Instant getDataResolucao() {
+        return dataResolucao;
+    }
+
+    public void setDataResolucao(java.time.Instant dataResolucao) {
+        this.dataResolucao = dataResolucao;
+    }
 
     public String getTitulo() {
         return titulo;
