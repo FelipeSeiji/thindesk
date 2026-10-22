@@ -1,37 +1,47 @@
 package com.pfc;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
-    public org.springframework.security.core.userdetails.UserDetailsService users(
-            @org.springframework.beans.factory.annotation.Value("${spring.security.user.name}") String usuario,
-            @org.springframework.beans.factory.annotation.Value("${spring.security.user.password}") String senha,
-            @org.springframework.beans.factory.annotation.Value("${thindesk.tecnico.username:tecnico}") String tecnico,
-            @org.springframework.beans.factory.annotation.Value("${thindesk.tecnico.password:tecnico123}") String senhaTecnico) {
-        var encoder = org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        return new org.springframework.security.provisioning.InMemoryUserDetailsManager(
-                org.springframework.security.core.userdetails.User.withUsername(usuario)
+    public UserDetailsService users(
+            @Value("${spring.security.user.name}") String usuario,
+            @Value("${spring.security.user.password}") String senha,
+            @Value("${thindesk.tecnico.username:tecnico}") String tecnico,
+            @Value("${thindesk.tecnico.password:tecnico123}") String senhaTecnico) {
+        var encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new InMemoryUserDetailsManager(
+                User.withUsername(usuario)
                         .password(encoder.encode(senha)).roles("USUARIO").build(),
-                org.springframework.security.core.userdetails.User.withUsername(tecnico)
+                User.withUsername(tecnico)
                         .password(encoder.encode(senhaTecnico)).roles("TECNICO").build());
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .httpBasic(org.springframework.security.config.Customizer.withDefaults())
+            .httpBasic(Customizer.withDefaults())
             .exceptionHandling(errors -> errors.defaultAuthenticationEntryPointFor(
-                    new org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED),
-                    new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/api/**")))
+                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                    new AntPathRequestMatcher("/api/**")))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/css/**", "/dist/**", "/plugins/**", "/js/**", "/images/**").permitAll() // Permitir acesso à página de login e arquivos estáticos
