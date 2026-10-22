@@ -1,6 +1,10 @@
 package com.pfc.thindesk.controller;
 
 import com.pfc.thindesk.entity.Chamado;
+import com.pfc.thindesk.dto.AberturaChamadoRequest;
+import jakarta.validation.Valid;
+import java.net.URI;
+import java.security.Principal;
 import com.pfc.thindesk.service.ChamadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +20,9 @@ public class ChamadoController {
     private ChamadoService chamadoService;
 
     @PostMapping
-    public Chamado criarChamado(@RequestBody Chamado chamado) {
-        return chamadoService.criarChamado(chamado);
+    public ResponseEntity<Chamado> criarChamado(@Valid @RequestBody AberturaChamadoRequest request, Principal principal) {
+        Chamado chamado = chamadoService.criarChamado(request.titulo(), request.descricao(), principal.getName());
+        return ResponseEntity.created(URI.create("/api/chamados/" + chamado.getId())).body(chamado);
     }
 
     @GetMapping

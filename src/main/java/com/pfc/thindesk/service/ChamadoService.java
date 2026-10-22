@@ -12,7 +12,13 @@ public class ChamadoService {
     @Autowired
     private ChamadoRepository chamadoRepository;
 
-    public Chamado criarChamado(Chamado chamado) {
+    public Chamado criarChamado(String titulo, String descricao, String solicitante) {
+        Chamado chamado = new Chamado();
+        chamado.setTitulo(titulo.trim());
+        chamado.setDescricao(descricao.trim());
+        chamado.setUsuario(solicitante);
+        chamado.setDataAbertura(java.time.Instant.now());
+        chamado.setStatus("ABERTO");
         return chamadoRepository.save(chamado);
     }
 
