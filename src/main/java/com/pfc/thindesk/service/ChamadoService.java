@@ -35,7 +35,10 @@ public class ChamadoService {
     }
 
     public List<Chamado> listarChamados() {
-        return chamadoRepository.findAll();
+        var autenticacao = SecurityContextHolder.getContext().getAuthentication();
+        boolean tecnico = autenticacao.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_TECNICO"));
+        return tecnico ? chamadoRepository.findAll() : chamadoRepository.findByUsuario(autenticacao.getName());
     }
 
     public List<Chamado> listarChamadosDoUsuario(String usuario, String solicitante) {
@@ -56,16 +59,6 @@ public class ChamadoService {
         if (!tecnico && !solicitante.equals(usuario)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso permitido apenas ao solicitante");
         }
-    }
-
-    public Chamado atualizarChamado(String id, Chamado chamadoAtualizado) {
-        consultarChamado(id, SecurityContextHolder.getContext().getAuthentication().getName());
-        if (chamadoAtualizado.getStatus() != null && !"ABERTO".equals(chamadoAtualizado.getStatus())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use o endpoint de resolucao para resolver o chamado");
-        }
-        Update update = new Update().set("descricao", chamadoAtualizado.getDescricao())
-                .set("tipo", chamadoAtualizado.getTipo());
-        return atualizarAberto(id, update);
     }
 
     @PreAuthorize("hasRole('TECNICO')")
