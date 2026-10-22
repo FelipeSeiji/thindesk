@@ -1,19 +1,20 @@
 package com.pfc.thindesk.service;
 
 import com.pfc.thindesk.entity.Chamado;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.List;
 import com.pfc.thindesk.repository.ChamadoRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import java.time.Instant;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ChamadoService {
@@ -29,7 +30,7 @@ public class ChamadoService {
         chamado.setTitulo(titulo.trim());
         chamado.setDescricao(descricao.trim());
         chamado.setUsuario(solicitante);
-        chamado.setDataAbertura(java.time.Instant.now());
+        chamado.setDataAbertura(Instant.now());
         chamado.setStatus("ABERTO");
         return chamadoRepository.save(chamado);
     }
@@ -65,7 +66,7 @@ public class ChamadoService {
     public Chamado resolverChamado(String id, String solucao, String tecnico) {
         consultarChamado(id, tecnico);
         Update update = new Update().set("solucao", solucao.trim()).set("status", "RESOLVIDO")
-                .set("dataResolucao", java.time.Instant.now()).set("tecnico", tecnico);
+                .set("dataResolucao", Instant.now()).set("tecnico", tecnico);
         return atualizarAberto(id, update);
     }
 
