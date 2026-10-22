@@ -9,6 +9,24 @@ public class Chamado{
     
     @Id
     private String id;
+    private String titulo;
+    private java.time.Instant dataAbertura;
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public java.time.Instant getDataAbertura() {
+        return dataAbertura;
+    }
+
+    public void setDataAbertura(java.time.Instant dataAbertura) {
+        this.dataAbertura = dataAbertura;
+    }
     private String descricao;
     private String status;
     private String tipo;
