@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface ChamadoRepository extends MongoRepository<Chamado, String> {
     List<Chamado> findByStatus(String status);
+    List<Chamado> findByUsuario(String usuario);
     
     
 }
